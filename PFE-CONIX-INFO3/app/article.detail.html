@@ -1,0 +1,8 @@
+<div *ngIf="article">
+	<div>
+		<p class="articleDetailsTitle">{{article.title}}</p>
+		<p class="articleDetailsLink"><a target="blank" href="{{article.link}}">{{article.link}}</a></p>
+		<p class="articleDetailsDescription"> {{article.description}}</p> 
+	</div>
+	<button (click)="hide()">Hide</button>
+</div>

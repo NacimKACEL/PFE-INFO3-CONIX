@@ -1,0 +1,28 @@
+<div id="appFrame">
+	<h1 id="appTitle">{{title}}</h1>
+	<div >
+		<input id="searchBar" [(ngModel)]="searchEntry" type="text" placeholder="  ..." size="50"/><!-- technique de ouf
+	--><input (click)="search()" type="submit" value="search"/>
+	</div>
+	<div>
+		<div id="articleList">
+			<ul class="articles">
+				<li *ngFor="let article of articles" [class.selected]="article === selectedArticle" (click)="onSelect(article)">
+					<div class="score">
+						<div *ngIf="article.score >0 ">
+							<img src="ressources/up.ico"/>
+						</div>
+						<div *ngIf="article.score <0 ">
+							<img src="ressources/down.ico"/>
+						</div>
+					</div>
+					<span class="badge">{{article.id}}</span> <span>{{article.title}}</span>
+					
+				</li>
+			</ul>
+		</div>
+		<div id="articleDetails">
+			<article-detail [article]="selectedArticle"></article-detail>
+		</div>
+	</div>
+<div>
