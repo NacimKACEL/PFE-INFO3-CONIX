@@ -1,0 +1,41 @@
+<--------------------------------- nom;Secteurs (source:wikipedia);CodeNAF;LibelleNAF ------------------------------>
+accorhotels;Hôtellerie;7010Z;Activités des sièges sociaux
+air liquide;Gaz industriel;2011Z;Fabrication de gaz industriels
+airbus group;Aéronautique défense;3030Z;Construction aéronautique et spatiale
+arcelormittal;Acier;2410Z;Sidérurgie
+axa;Assurance;6511Z;Assurance vie
+bnp paribas;Banque;6419Z;Autres intermédiations monétaires
+bouygues;BTP;4213A;Construction d'ouvrages d'art
+capgemini;Services informatiques;6202A;Conseil en systèmes et logiciels informatiques
+carrefour;Distribution;4711F;Hypermarchés
+crédit agricole;Banque;6419Z;Autres intermédiations monétaires
+danone;Agroalimentaire;1051A;Fabrication de lait liquide et de produits frais
+engie;Énergie;3523Z;Commerce de combustibles gazeux par conduites
+essilor international;Optique;3250B;Fabrication de lunettes
+klépierre;Immobilier;6832A;Administration d'immeubles et autres biens immobiliers
+kering;Luxe;4690Z;Commerce de gros (commerce interentreprises) non spécialisé
+lafargeholcim;Ciment;4671Z;Commerce de gros (commerce interentreprises) de combustibles et de produits annexes
+legrand;Matériel électrique;2733Z;Fabrication de matériel d'installation électrique
+l'oréal;Cosmétique;4645Z;Commerce de gros (commerce interentreprises) de parfumerie et de produits de beauté
+lvmh;Luxe;6420Z;Activités des sociétés holding
+michelin;Pneumatique,tourisme,gastronomie;2211Z;Fabrication et rechapage de pneumatiques
+nokia;Télécommunications;4652Z;Commerce interentreprises de composants et d'équipements électroniques et de télécommunication
+orange;Télécommunications;6110Z;Télécommunications filaires
+pernod ricard;Spiritueux;1101Z;Production de boissons alcooliques distillées
+groupe psa;Automobile;2910Z;Construction de véhicules automobiles
+publicis groupe;Publicité;7311Z;Activités des agences de publicité
+renault;Automobile;2910Z;Construction de véhicules automobiles
+safran;Aéronautique;3030Z;Construction aéronautique et spatiale
+saint-gobain;Matériaux de construction,Verre;2312Z;Façonnage et transformation du verre plat
+sanofi;Pharmacie;4646Z;Commerce de gros (commerce interentreprises) de produits pharmaceutiques
+schneider electric;Matériel électrique;2712Z;Fabrication de matériel de distribution et de commande électrique
+société générale;Banque;6419Z;Autres intermédiations monétaires
+sodexo;restauration collective;5629A;Restauration collective sous contrat
+solvay;Chimie;3523Z;Commerce de combustibles gazeux par conduites
+technip;Ingénierie pétrolière;7112B;Ingénierie, études techniques
+total;Pétrole;1920Z;Raffinage du pétrole
+unibail-Rodamco;Immobilier;4110A;Promotion immobilière de logements
+valeo;Équipementier automobile;2931Z;Fabrication d'équipements électriques et électroniques automobiles
+veolia Environnement;Services collectifs;7010Z;Activités des sièges sociaux
+vinci;BTP;4120B;Construction d'autres bâtiments
+vivendi;Média;6420Z;Activités des sociétés holding
