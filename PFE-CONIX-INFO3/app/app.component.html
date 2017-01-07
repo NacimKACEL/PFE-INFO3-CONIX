@@ -5,6 +5,7 @@
 	--><input (click)="search()" type="submit" value="search"/>
 	</div>
 	<div>
+		<div [ngClass]="loaderStatus"><img src="ressources/ajax-load.gif"/></div>
 		<div id="articleList">
 			<ul class="articles">
 				<li *ngFor="let article of articles" [class.selected]="article === selectedArticle" (click)="onSelect(article)">

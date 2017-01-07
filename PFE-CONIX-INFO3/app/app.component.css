@@ -138,4 +138,12 @@ input[type=submit]:hover {
 }
 
 
+.inactive
+{
+	display: none;
+}
 
+.active
+{
+	display : visible;
+}

@@ -17,6 +17,7 @@ export class AppComponent {
     restArticles : Article[];
     selectedArticle : Article;
     searchEntry : string;
+    loaderStatus : string = "inactive";
 
     constructor(private articleService : ArticleService){ }
 
@@ -33,6 +34,7 @@ export class AppComponent {
     }
 
     search() : void {
-        this.articleService.extract(this.searchEntry).then(r => r.json()).then(r => this.articles = r);
+        this.loaderStatus = "active";
+        this.articleService.extract(this.searchEntry).then(r => r.json()).then(r => {this.articles = r; this.loaderStatus = "inactive"});
     }
 }

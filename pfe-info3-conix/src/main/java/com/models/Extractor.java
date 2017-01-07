@@ -1,8 +1,8 @@
 package com.models;
 
+import static java.util.Arrays.asList;
+
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,13 +25,12 @@ import org.jsoup.select.Elements;
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import de.l3s.boilerpipe.extractors.ArticleExtractor;
 
-import static java.util.Arrays.asList;
-
 public class Extractor {
 	public ArrayList<Article> extract(String firmName){
-		Document doc;
+		final String OS = System.getProperty("os.name").toLowerCase();
 		try 
 		{
+			Document doc;
 			firmName = firmName.toLowerCase();
 			
 			ClassLoader classLoader = getClass().getClassLoader();
@@ -96,6 +95,20 @@ public class Extractor {
 			int nbArticles = links.size();
 			
 			ArrayList<Article> articles = new ArrayList<Article>();
+			TreeTaggerWrapper<String> tt = new TreeTaggerWrapper<String>();
+			if (OS.indexOf("win") >= 0)
+			{
+				System.setProperty("treetagger.home", "C:/Program Files/Treetagger");
+			}
+			else if(OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 )
+			{
+				System.setProperty("treetagger.home", "/home/brahim/INFO3/treetagger");
+//				System.setProperty("treetagger.home", "/usr/lib/treetagger");
+			}
+			else
+			{
+				System.setProperty("treetagger.home", "/Applications/treetagger");
+			}
 			
 			IntStream.range(0, nbArticles).forEach(
 					index -> {
@@ -112,10 +125,8 @@ public class Extractor {
 								urlBis = new URL(matcher.group(1));
 								
 								String text = ArticleExtractor.INSTANCE.getText(urlBis).toLowerCase();
-								
 								String[] words = text.split(" ");
-								TreeTaggerWrapper<String> tt = new TreeTaggerWrapper<String>();
-							    System.setProperty("treetagger.home", "/home/brahim/INFO3/treetagger");
+								
 							    ArrayList<String> str = new ArrayList<String>();
 							    try 
 							    {
@@ -176,7 +187,7 @@ public class Extractor {
 				        } 
 				        else 
 				        {
-				        	System.out.println("Problem de détection de liens");
+				        	System.out.println("Problème de détection de liens");
 				        }
 			        }
 			    );
@@ -184,7 +195,7 @@ public class Extractor {
 		}
 		catch (IOException e) 
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return null;
 	}
