@@ -28,7 +28,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/brahim/Téléchargements/boilerpipe/trunk/boilerpipe-core/dist/boilerpipe-1.2.0.jar">
+	<classpathentry kind="lib" path="C:/Users/abdou/Desktop/DEVOIRS/PFE/boilerpipe-1.2.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>

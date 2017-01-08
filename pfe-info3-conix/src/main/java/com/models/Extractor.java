@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,9 +19,11 @@ import java.util.stream.IntStream;
 import org.annolab.tt4j.TokenHandler;
 import org.annolab.tt4j.TreeTaggerException;
 import org.annolab.tt4j.TreeTaggerWrapper;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.xml.sax.InputSource;
 
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import de.l3s.boilerpipe.extractors.ArticleExtractor;
@@ -87,11 +90,17 @@ public class Extractor {
 			// On utilise Google comme moteur de recherche
 			
 			String url = "http://www.google.fr/search?q=" + firmName +" "+ secteur +"&espv=2&source=lnms&tbm=nws&sa=X";
-			doc = Jsoup.connect(url).userAgent("Mozilla").get();
+			Connection.Response cr = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (compatible; MSIE 10.6; Windows NT 6.1;                   Trident/5.0; InfoPath.2; SLCC1; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR  2.0.50727) 3gpp-gba UNTRUSTED/1.0")
+                    .cookie("auth", "token")
+                    .timeout(5000)
+                    .execute();
+			doc = Jsoup.parse(cr.body(), "ISO-8859-1");
 			
 			//On récupère les titres h3 avec la description(ayant la classe st)
 			Elements links = doc.select("h3 > a[href]");
 			Elements descriptions = doc.select(".st");
+
 			int nbArticles = links.size();
 			
 			ArrayList<Article> articles = new ArrayList<Article>();
@@ -112,7 +121,7 @@ public class Extractor {
 			
 			IntStream.range(0, nbArticles).forEach(
 					index -> {
-						Pattern pattern = Pattern.compile("q=(.*?)&");
+						Pattern pattern = Pattern.compile("url=(http:.*?)&");
 				        Matcher matcher = pattern.matcher(links.get(index).attr("href"));
 				        
 				        if (matcher.find())
@@ -122,15 +131,17 @@ public class Extractor {
 				        	int nbN = 0;
 							try 
 							{
+//								System.out.println(links.get(index).attr("href")+" on se prépare vers "+ matcher.group(1) +"ok" + links.get(index).text());
 								urlBis = new URL(matcher.group(1));
-								
-								String text = ArticleExtractor.INSTANCE.getText(urlBis).toLowerCase();
+								InputSource isource = new InputSource();
+								isource.setEncoding("UTF-8");
+								isource.setByteStream(urlBis.openStream());
+								String text = ArticleExtractor.INSTANCE.getText(isource).toLowerCase().replaceAll("[,?;.:/!<>&0-9()»«*|]", "");
+//								System.out.println("so far " + text);
 								String[] words = text.split(" ");
-								
 							    ArrayList<String> str = new ArrayList<String>();
 							    try 
 							    {
-									 
 							    		tt.setModel("french-utf8.par");
 										tt.setHandler(new TokenHandler<String>() 
 										{
@@ -146,8 +157,14 @@ public class Extractor {
 								} 
 							    catch (IOException e) 
 							    {
-									e.printStackTrace();
-								} 
+							    	System.out.println("IO Exception...");
+									//e.printStackTrace();
+								}
+							    catch (IllegalCharsetNameException  e) 
+							    {
+							    	System.out.println("Illegal charset...");
+									//e.printStackTrace();
+								}
 							    catch (TreeTaggerException e) 
 							    {
 									e.printStackTrace();
@@ -156,16 +173,16 @@ public class Extractor {
 							    {
 							    	tt.destroy();
 							    }
-								
+
 								for(String word:str)
 								{
 									if (mapPositifs.get(word) != null)
 									{
 										nbP ++;
-										System.out.println("positif " + word);
+//										System.out.println("positif " + word);
 									} else if (mapNegatifs.get(word) != null){
 										nbN ++;
-										System.out.println("negatif " + word);
+//										System.out.println("negatif " + word);
 									}
 								}
 								System.out.println("Score sur ..." + index + "..."+ nbP + "..." + nbN );
@@ -176,18 +193,22 @@ public class Extractor {
 							}
 							catch (MalformedURLException e1)
 							{
-								e1.printStackTrace();
+								System.out.println("URL mal formée...");
+//								e1.printStackTrace();
 							}
 							catch (BoilerpipeProcessingException e)
 							{
-								e.printStackTrace();
+//								e.printStackTrace();
 								System.out.println("Problème accès URL");
+							} catch (IOException e1) {
+								System.out.println("Some IOException");
+								//e1.printStackTrace();
 							} 
 				        	
 				        } 
 				        else 
 				        {
-				        	System.out.println("Problème de détection de liens");
+				        	System.out.println("Problème de détection de liens ou il s'agit d'un lien protégé");
 				        }
 			        }
 			    );
@@ -195,6 +216,7 @@ public class Extractor {
 		}
 		catch (IOException e) 
 		{
+			System.out.println("Some IOException");
 			//e.printStackTrace();
 		}
 		return null;
