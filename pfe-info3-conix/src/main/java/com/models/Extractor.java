@@ -1,6 +1,6 @@
 package com.models;
 
-import static java.util.Arrays.asList;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,47 +29,24 @@ import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import de.l3s.boilerpipe.extractors.ArticleExtractor;
 
 public class Extractor {
-	public ArrayList<Article> extract(String firmName){
-		final String OS = System.getProperty("os.name").toLowerCase();
-		try 
-		{
-			Document doc;
-			firmName = firmName.toLowerCase();
-			
-			ClassLoader classLoader = getClass().getClassLoader();
+	Map<String, String> mapPositifs = null;
+	Map<String, String> mapNegatifs = null;
+	ClassLoader classLoader = getClass().getClassLoader();
+	public Extractor() {
+		System.out.println("new Extractor");
+		long startTime = System.currentTimeMillis();
+		long endTime;
+		mapPositifs = new HashMap<String, String>();
+		mapNegatifs = new HashMap<String, String>();
 		
-			Map<String, String> mapPositifs = new HashMap<String, String>();
-			Map<String, String> mapNegatifs = new HashMap<String, String>();
-			
-			InputStream is = classLoader.getResourceAsStream("entreprises.txt");
-			BufferedReader in = new BufferedReader(new InputStreamReader(is));
-			
-			/* Chargement des fichiers, du dictionnaire */
-			
-			String line = null;
-			String[] arraySplit = new String[4];
-			// A editer : quand l'entreprise n'est pas référencée dans la base
-			String secteur = "";
-			int i = 0;
-			
-			while ((line = in.readLine()) != null) 
-			{
-				i++;
-				if(i==1)
-					continue;
-
-				arraySplit = line.split(";");
-				if(arraySplit[0].equals(firmName))
-				{
-					System.out.println("entreprise TROUVE");
-					secteur = arraySplit[1];
-				}
-			}			
-			in.close();
-			is.close();
-			
-			is = classLoader.getResourceAsStream("positifs.txt");
-			in = new BufferedReader(new InputStreamReader(is));			 
+		
+		
+		/* Chargement des fichiers, du dictionnaire */
+		
+		String line = null;
+		InputStream is = classLoader.getResourceAsStream("positifs.txt");
+		BufferedReader in = new BufferedReader(new InputStreamReader(is));			 
+		try {
 			while ((line = in.readLine()) != null) 
 			{		
 					mapPositifs.put(line, line);
@@ -85,9 +62,60 @@ public class Extractor {
 			}			
 			in.close();
 			is.close();
+
+			endTime = System.currentTimeMillis();
+			System.out.println("Durée de chargement constructeur Extractor " + (endTime-startTime));
+			
+		} catch (IOException e) {
+			System.out.println("IOException dans Extractor.java au niveau du constructeur");
+//			e.printStackTrace();
+		}
+		
+	}
+
+	public ArrayList<Article> extract(String firmName){
+		long startTime;
+		long endTime;
+		
+		try 
+		{
+			startTime = System.currentTimeMillis();
+			Document doc;
+			firmName = firmName.toLowerCase();
+			
+			
+			InputStream is = classLoader.getResourceAsStream("entreprises.txt");
+			BufferedReader in = new BufferedReader(new InputStreamReader(is));
+			
+			/* Chargement du fichier */
+			
+			String line = null;
+			String[] arraySplit = new String[4];
+			// A editer : quand l'entreprise n'est pas référencée dans la base
+			String secteur = "";
+			int i = 0;
+			
+			while ((line = in.readLine()) != null) 
+			{
+				i++;
+				if(i==1)
+					continue;
+				arraySplit = line.split(";");
+				if(arraySplit[0].equals(firmName))
+				{
+					System.out.println("entreprise TROUVE");
+					secteur = arraySplit[1];
+				}
+			}			
+			in.close();
+			is.close();
+			
+			endTime = System.currentTimeMillis();
+			System.out.println("Durée de chargement entreprises.txt " + (endTime-startTime));
 			
 			// Web Crawler
 			// On utilise Google comme moteur de recherche
+			startTime = System.currentTimeMillis();
 			
 			String url = "http://www.google.fr/search?q=" + firmName +" "+ secteur +"&espv=2&source=lnms&tbm=nws&sa=X";
 			Connection.Response cr = Jsoup.connect(url)
@@ -97,31 +125,33 @@ public class Extractor {
                     .execute();
 			doc = Jsoup.parse(cr.body(), "ISO-8859-1");
 			
+			endTime = System.currentTimeMillis();
+			System.out.println("Durée de récupération sur google " + (endTime-startTime));
+			
+			startTime = System.currentTimeMillis();
+			
 			//On récupère les titres h3 avec la description(ayant la classe st)
 			Elements links = doc.select("h3 > a[href]");
 			Elements descriptions = doc.select(".st");
-
-			int nbArticles = links.size();
 			
+			endTime = System.currentTimeMillis();
+			System.out.println("Durée du select " + (endTime-startTime));
+			
+			startTime = System.currentTimeMillis();
+			
+			int nbArticles = links.size();
 			ArrayList<Article> articles = new ArrayList<Article>();
-			TreeTaggerWrapper<String> tt = new TreeTaggerWrapper<String>();
-			if (OS.indexOf("win") >= 0)
-			{
-				System.setProperty("treetagger.home", "C:/Program Files/Treetagger");
-			}
-			else if(OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 )
-			{
-				System.setProperty("treetagger.home", "/home/brahim/INFO3/treetagger");
-//				System.setProperty("treetagger.home", "/usr/lib/treetagger");
-			}
-			else
-			{
-				System.setProperty("treetagger.home", "/Applications/treetagger");
-			}
+			
+			Pattern pattern = Pattern.compile("url=(.*?)&");
+			
+			Tagger tagger = new Tagger();
+			
+			endTime = System.currentTimeMillis();
+			System.out.println("Durée du tagger et init variables " + (endTime-startTime));
 			
 			IntStream.range(0, nbArticles).forEach(
 					index -> {
-						Pattern pattern = Pattern.compile("url=(http:.*?)&");
+						
 				        Matcher matcher = pattern.matcher(links.get(index).attr("href"));
 				        
 				        if (matcher.find())
@@ -133,48 +163,25 @@ public class Extractor {
 							{
 //								System.out.println(links.get(index).attr("href")+" on se prépare vers "+ matcher.group(1) +"ok" + links.get(index).text());
 								urlBis = new URL(matcher.group(1));
+								long startTimeE = System.currentTimeMillis();
 								InputSource isource = new InputSource();
 								isource.setEncoding("UTF-8");
 								isource.setByteStream(urlBis.openStream());
 								String text = ArticleExtractor.INSTANCE.getText(isource).toLowerCase().replaceAll("[,?;.:/!<>&0-9()»«*|]", "");
-//								System.out.println("so far " + text);
+								
+								long endTimeE = System.currentTimeMillis();
+								System.out.println("Durée d'une extraction " + (endTimeE-startTimeE));
+								//								System.out.println("so far " + text);
 								String[] words = text.split(" ");
-							    ArrayList<String> str = new ArrayList<String>();
-							    try 
-							    {
-							    		tt.setModel("french-utf8.par");
-										tt.setHandler(new TokenHandler<String>() 
-										{
-											public void token(String token, String pos, String lemma) 
-											{
-												//        System.out.println(token+"\t"+pos+"\t"+lemma);
-												str.add(lemma);
-											}
-										});
-										tt.process(asList(words));
-										//System.out.println(str);
-										//System.out.println("\n\n\nNouvel article\n\n");
-								} 
-							    catch (IOException e) 
-							    {
-							    	System.out.println("IO Exception...");
-									//e.printStackTrace();
-								}
-							    catch (IllegalCharsetNameException  e) 
-							    {
-							    	System.out.println("Illegal charset...");
-									//e.printStackTrace();
-								}
-							    catch (TreeTaggerException e) 
-							    {
-									e.printStackTrace();
-								}
-							    finally
-							    {
-							    	tt.destroy();
-							    }
-
-								for(String word:str)
+								
+								startTimeE = System.currentTimeMillis();
+							    ArrayList<String> str = tagger.tag(words);
+							    endTimeE = System.currentTimeMillis();
+								System.out.println("Durée du tagging " + (endTimeE-startTimeE));
+								
+								startTimeE = System.currentTimeMillis();
+								
+							    for(String word:str)
 								{
 									if (mapPositifs.get(word) != null)
 									{
@@ -185,6 +192,9 @@ public class Extractor {
 //										System.out.println("negatif " + word);
 									}
 								}
+							    endTimeE = System.currentTimeMillis();
+								System.out.println("Durée du for pour un article " + (endTimeE-startTimeE));
+							    
 								System.out.println("Score sur ..." + index + "..."+ nbP + "..." + nbN );
 					        	Article article = new Article(index, matcher.group(1), 
 					        			links.get(index).text(), descriptions.get(index).text(),
@@ -201,7 +211,7 @@ public class Extractor {
 //								e.printStackTrace();
 								System.out.println("Problème accès URL");
 							} catch (IOException e1) {
-								System.out.println("Some IOException");
+								System.out.println("Some IOException level Boilerpipe");
 								//e1.printStackTrace();
 							} 
 				        	
@@ -212,11 +222,12 @@ public class Extractor {
 				        }
 			        }
 			    );
+			tagger.destroy();
 			return articles;
 		}
 		catch (IOException e) 
 		{
-			System.out.println("Some IOException");
+			System.out.println("IOException dans Extractor au niveau de Jsoup");
 			//e.printStackTrace();
 		}
 		return null;

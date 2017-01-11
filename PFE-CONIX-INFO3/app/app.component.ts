@@ -32,9 +32,12 @@ export class AppComponent {
     onSelect(article : Article){
         this.selectedArticle = article;
     }
-
     search() : void {
         this.loaderStatus = "active";
-        this.articleService.extract(this.searchEntry).then(r => r.json()).then(r => {this.articles = r; this.loaderStatus = "inactive"});
+        this.articleService.extract(this.searchEntry)
+          .then(r => r.json())
+          .catch(e => alert("un incident est survenu" + e))
+          .then(r => {this.articles = r; this.loaderStatus = "inactive"})
+          ;
     }
 }

@@ -14,6 +14,7 @@ var AppComponent = (function () {
     function AppComponent(articleService) {
         this.articleService = articleService;
         this.title = "PFE-INFO3-CONIX";
+        this.loaderStatus = "inactive";
     }
     AppComponent.prototype.ngOnInit = function () {
         this.resolveArticles();
@@ -26,7 +27,11 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.search = function () {
         var _this = this;
-        this.articleService.extract(this.searchEntry).then(function (r) { return r.json(); }).then(function (r) { return _this.articles = r; });
+        this.loaderStatus = "active";
+        this.articleService.extract(this.searchEntry)
+            .then(function (r) { return r.json(); })
+            .catch(function (e) { return alert("un incident est survenu" + e); })
+            .then(function (r) { _this.articles = r; _this.loaderStatus = "inactive"; });
     };
     return AppComponent;
 }());

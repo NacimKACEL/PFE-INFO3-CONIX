@@ -20,7 +20,7 @@ public class ExtractorController{
 	public void setExtractorService(ExtractorService es){
 		this.extractorService = es;
 	}
-	@CrossOrigin(origins = "http://localhost:3000")
+	@CrossOrigin(origins = "*")
 	@RequestMapping(value="/extract/{firmName}/{id}", method = RequestMethod.GET, produces = "application/json")
 	public String getExtractedArticleById(@PathVariable String firmName, @PathVariable int id){
 		return this.extractorService.extractJsonArticleById(firmName, id);
@@ -30,7 +30,7 @@ public class ExtractorController{
 	public String getExtractedArticles(@PathVariable String firmName){
 		return this.extractorService.extractJsonArticles(firmName);
 	}
-//	@CrossOrigin(origins = "*")
+	@CrossOrigin(origins = "*")
 	@RequestMapping(value="/extract/utf8/{firmName}", method = RequestMethod.GET, produces = "application/json")
 	public byte[] getExtractedArticlesUTF8(@PathVariable String firmName){
 		return this.extractorService.extractJsonArticlesUTF8(firmName);

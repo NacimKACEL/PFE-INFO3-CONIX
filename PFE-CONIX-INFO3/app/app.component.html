@@ -1,8 +1,10 @@
 <div id="appFrame">
 	<h1 id="appTitle">{{title}}</h1>
-	<div >
-		<input id="searchBar" [(ngModel)]="searchEntry" type="text" placeholder="  ..." size="50"/><!-- technique de ouf
-	--><input (click)="search()" type="submit" value="search"/>
+	<div>
+	<form>
+		<input id="searchBar" [(ngModel)]="searchEntry" [ngModelOptions]="{standalone: true}" type="text" placeholder="  ..." size="50"/>
+		<input (click)="search()" type="submit" value="search"/>
+	</form>	
 	</div>
 	<div>
 		<div [ngClass]="loaderStatus"><img src="ressources/ajax-load.gif"/></div>
@@ -26,4 +28,4 @@
 			<article-detail [article]="selectedArticle"></article-detail>
 		</div>
 	</div>
-<div>
+</div>

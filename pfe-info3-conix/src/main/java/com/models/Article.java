@@ -1,5 +1,7 @@
 package com.models;
 
+import java.util.ArrayList;
+
 public class Article {
 	int id;
 
@@ -8,7 +10,8 @@ public class Article {
 	String description;
 	String fullText;
 	Integer score;
-	
+	ArrayList<String> posWords;
+	ArrayList<String> negWords;
 	public String getFullText() {
 		return fullText;
 	}
@@ -27,6 +30,43 @@ public class Article {
 		this.score = score;
 	}
 	
+	public Integer getScore() {
+		return score;
+	}
+
+	public void setScore(Integer score) {
+		this.score = score;
+	}
+
+	public ArrayList<String> getPosWords() {
+		return posWords;
+	}
+
+	public void setPosWords(ArrayList<String> posWords) {
+		this.posWords = posWords;
+	}
+
+	public ArrayList<String> getNegWords() {
+		return negWords;
+	}
+
+	public void setNegWords(ArrayList<String> negWords) {
+		this.negWords = negWords;
+	}
+
+	public Article(int id, String link, String title, String description, String fullText, Integer score,
+			ArrayList<String> posWords, ArrayList<String> negWords) {
+		super();
+		this.id = id;
+		this.link = link;
+		this.title = title;
+		this.description = description;
+		this.fullText = fullText;
+		this.score = score;
+		this.posWords = posWords;
+		this.negWords = negWords;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -60,7 +100,7 @@ public class Article {
 	}
 
 	public Article() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	@Override

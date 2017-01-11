@@ -145,10 +145,17 @@
     		<version>1.2.1</version>
 		</dependency>
 		<dependency>
-  <groupId>org.apache.opennlp</groupId>
-  <artifactId>opennlp-tools</artifactId>
-  <version>1.7.0</version>
-</dependency>
+		  <groupId>org.apache.opennlp</groupId>
+		  <artifactId>opennlp-tools</artifactId>
+		  <version>1.7.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.thetransactioncompany/cors-filter -->
+		<dependency>
+		    <groupId>com.thetransactioncompany</groupId>
+		    <artifactId>cors-filter</artifactId>
+		    <version>2.5</version>
+		</dependency>
+		
 	</dependencies>
 	
 	<build>
