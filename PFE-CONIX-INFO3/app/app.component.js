@@ -31,7 +31,34 @@ var AppComponent = (function () {
         this.articleService.extract(this.searchEntry)
             .then(function (r) { return r.json(); })
             .catch(function (e) { return alert("un incident est survenu" + e); })
-            .then(function (r) { _this.articles = r; _this.loaderStatus = "inactive"; });
+            .then(function (r) {
+            _this.articles = r;
+            _this.loaderStatus = "inactive";
+            //                var words = [
+            //                  {text: r[2].negWords[0]},
+            //                  {text: r[2].negWords[1]},
+            //                ];
+            var nwords = [];
+            r.forEach(function (art) {
+                art.negWords.forEach(function (w) {
+                    nwords.push({ text: w, weight: 0.3 });
+                });
+            });
+            console.log('words negatifs', nwords);
+            $('#negWords').jQCloud(nwords);
+            var pwords = [];
+            r.forEach(function (art) {
+                art.posWords.forEach(function (w) {
+                    pwords.push({ text: w, weight: 0.1 });
+                });
+            });
+            console.log('words positifs', pwords);
+            $('#posWords').jQCloud(pwords, {
+                colors: ["#800026", "#bd0026", "#e31a1c",
+                    "#fc4e2a", "#fd8d3c", "#feb24c", "#fed976",
+                    "#ffeda0", "#ffffcc"]
+            });
+        });
     };
     return AppComponent;
 }());

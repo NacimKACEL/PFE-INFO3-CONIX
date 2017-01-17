@@ -6,6 +6,7 @@ import { Article } from './article';
 import { Configuration } from './configuration';
 
 import 'rxjs/add/operator/toPromise';
+declare var $:JQueryStatic;
 
 
 @Injectable()

@@ -10,7 +10,7 @@
 		<div [ngClass]="loaderStatus"><img src="ressources/ajax-load.gif"/></div>
 		<div id="articleList">
 			<ul class="articles">
-				<li *ngFor="let article of articles" [class.selected]="article === selectedArticle" (click)="onSelect(article)">
+				<li *ngFor="let article of articles; let i= index;" [class.selected]="article === selectedArticle" (click)="onSelect(article)">
 					<div class="score">
 						<div *ngIf="article.score >0 ">
 							<img src="ressources/up.ico"/>
@@ -19,13 +19,31 @@
 							<img src="ressources/down.ico"/>
 						</div>
 					</div>
-					<span class="badge">{{article.id}}</span> <span>{{article.title}}</span>
-					
+					<span class="badge">{{i}}</span> 
+					<span>{{article.title}}</span>
 				</li>
 			</ul>
 		</div>
 		<div id="articleDetails">
 			<article-detail [article]="selectedArticle"></article-detail>
+		</div>
+		<div id="negWords" style="height: 300px;width:1000px;">
+			<!-- <ul>
+				<li *ngFor="let article of articles; let i= index;">
+					<div *ngFor="let negWord of article.negWords; let j= index;">
+						<span>{{negWord}}</span>
+					</div>
+				</li>
+			</ul> -->
+		</div>
+		<div id="posWords" style="height: 300px;width:1000px;">
+			<!-- <ul>
+				<li *ngFor="let article of articles; let i= index;">
+					<div *ngFor="let posWord of article.posWords; let j= index;">
+						<span>{{posWord}}</span>
+					</div>
+				</li>
+			</ul> -->
 		</div>
 	</div>
 </div>
