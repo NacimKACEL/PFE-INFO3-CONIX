@@ -94,10 +94,10 @@ public class NaiveBayesClassifier implements TextScorer{
         Stream<Map.Entry<String,Double>> sorted = mpPos.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue()));
         sorted = sorted.limit(3);
         sorted.forEach(s -> {System.out.println("hey Po " + s.getKey() + " " + s.getValue());});
-        System.out.println("En fait..." + sMaxi + " avec " +maxi);
+//        System.out.println("En fait..." + sMaxi + " avec " +maxi);
  
         
-        System.out.format("La phrase \"%s\" a été classée comme \n\"%s\".%n", phrase, classe);
+//        System.out.format("La phrase \"%s\" a été classée comme \n\"%s\".%n", phrase, classe);
         return classe;        
 
 	}

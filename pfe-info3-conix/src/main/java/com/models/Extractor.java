@@ -18,7 +18,11 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.xml.sax.InputSource;
+
+import com.services.ArticleService;
 
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import de.l3s.boilerpipe.extractors.ArticleExtractor;
@@ -27,10 +31,20 @@ public class Extractor {
 	TextScorer classifier = null;
 	int nbReached = 0;
 	ClassLoader classLoader = getClass().getClassLoader();
+	ArticleService articleService;
 	/* NomEntreprise, Secteur */
 	Map<String, String> mapEntreprises = null;
+	public Map<String, String> getMapEntreprises() {
+		return mapEntreprises;
+	}
+	@Autowired(required=true)
+	@Qualifier(value="articleService") 
+	public void setArticleService(ArticleService as){
+		System.out.println("Entered in set ArticleService de Extractor");	
+		this.articleService = as;
+	}
 	public Extractor() {
-		System.out.println("new Extractor");
+		System.out.println("Nouvelle instance d'Extractor");
 		classifier = new NaiveBayesClassifier();
 		mapEntreprises = new HashMap<String, String>();
 		InputStream is = classLoader.getResourceAsStream("entreprises.txt");
@@ -52,20 +66,22 @@ public class Extractor {
 			}
 			in.close();
 			is.close();
-		} catch (IOException e) {
+		} catch (IOException e) 
+		{
 			System.out.println("Problème dans la lecture du fichier Entreprises");
-//			e.printStackTrace();
 		}			
 	}
 
 	public ArrayList<Article> extract(String firmName){		
+		this.nbReached = 0;
 		try 
 		{
 			Document doc;
 			firmName = firmName.toLowerCase();
 			String secteur = "";
 			
-			if(mapEntreprises.containsKey(firmName)){
+			if(mapEntreprises.containsKey(firmName))
+			{
 				secteur = mapEntreprises.get(firmName);
 			}
 			
@@ -97,59 +113,82 @@ public class Extractor {
 			for(index = 0; index <nbArticles ; index++)
 			{
 				Matcher matcher = pattern.matcher(links.get(index).attr("href"));
-		        
+		        Article article = null;
 		        if (matcher.find())
 		        {
-		        	URL urlBis;
-					try 
-					{
-						urlBis = new URL(matcher.group(1));
-						InputSource isource = new InputSource();
-						isource.setEncoding("UTF-8");
-						isource.setByteStream(urlBis.openStream());
-						String text = ArticleExtractor.INSTANCE.getText(isource).toLowerCase().replaceAll("[,?;.:/!<>&0-9()»«*%|\"{}]", "");
-						nbReached ++;
-//						System.out.println("Texte initial sans ponctuations etc.." + text);
-						String[] words = text.split(" ");
-						
-					    /* Utilisation de treeTagger */
-						//ArrayList<String> str = tagger.tag(words);
-						/* Utilisation de Stemmer */
-						ArrayList<String> str = stemmer.tag(words);
-						
-						/* Méthode apprentissage supervisée ou non 
-						 * (si NaiveBayes alors supervisée) 
-						 * (si lexique alors non supervisée)
-						 * */
-						String sc = classifier.score(str);
-						
-						System.out.println("Score sur ..." + index + "..."+ sc);
-			        	Article article = new Article(index, matcher.group(1), 
-			        			links.get(index).text(), descriptions.get(index).text(),
-			        			String.join(" ", str), (sc == "Positif")?1:-1);
-			        	articles.add(article);
-			        	if(nbReached == 10)
-			        	{
-			        		 nbReached = 0;
-			        		 System.out.println("Limite atteinte");
-			        		 break;
-			        	}	
+		        	if(this.nbReached == 10)
+		        	{
+		        		 this.nbReached = 0;
+		        		 System.out.println("Limite atteinte");
+		        		 break;
+		        	}
+		        	
+		        	if((article = this.articleService.getArticleByLink(matcher.group(1))) != null)
+		        	{
+		        		System.out.println("Article récupéré...");
+		        		articles.add(article);
+		        		this.nbReached++;
+		        	}
+		        	else 
+		        	{
+		        		URL urlBis;
+						try 
+						{
+							urlBis = new URL(matcher.group(1));
+							InputSource isource = new InputSource();
+							isource.setEncoding("UTF-8");
+							isource.setByteStream(urlBis.openStream());
+							String text = ArticleExtractor.INSTANCE.getText(isource).toLowerCase().replaceAll("[,?;.:/!<>&0-9()»«*%|\"{}]", "");
+							this.nbReached++;
+//							System.out.println("Texte initial sans ponctuations etc.." + text);
+							String[] words = text.split(" ");
+							
+						    /* Utilisation de treeTagger */
+							//ArrayList<String> str = tagger.tag(words);
+							/* Utilisation de Stemmer */
+							ArrayList<String> str = stemmer.tag(words);
+							
+							/* Méthode apprentissage supervisée ou non 
+							 * (si NaiveBayes alors supervisée) 
+							 * (si lexique alors non supervisée)
+							 * */
+							String sc = classifier.score(str);
+							LexiqueScorer lS = new LexiqueScorer();
+//							for(String s:lS.getPosWords(words))
+//							{
+//								System.out.println("Pos List" + s);
+//							}
+//							for(String s:lS.getNegWords(words))
+//							{
+//								System.out.println("Neg List" + s);
+//							}
+//							System.out.println("Score sur ..." + index + "..."+ sc);
+				        	article = new Article(index, matcher.group(1), 
+				        			links.get(index).text(), descriptions.get(index).text(),
+				        			String.join(" ", str), (sc == "Positif")?1:-1, 
+				        					new ArrayList<String>(lS.getPosWords(words)), 
+				        					new ArrayList<String>(lS.getNegWords(words)));
+				        	
+				        	articles.add(article);
+				        	this.articleService.persistArticle(article);	
+						}
+						catch (MalformedURLException e1)
+						{
+							System.out.println("URL mal formée...");
+						}
+						catch (BoilerpipeProcessingException e)
+						{
+							//e.printStackTrace();
+							System.out.println("Problème accès URL avec BoilerPipe");
+						}
+						catch (IOException e1) {
+							System.out.println("IOException au niveau de Boilerpipe");
+							System.out.println(e1.getMessage());
+//							e1.printStackTrace();
+						}
 					}
-					catch (MalformedURLException e1)
-					{
-						System.out.println("URL mal formée...");
-					}
-					catch (BoilerpipeProcessingException e)
-					{
-//						e.printStackTrace();
-						System.out.println("Problème accès URL avec BoilerPipe");
-					}
-					catch (IOException e1) {
-						System.out.println("IOException au niveau de Boilerpipe");
-						//e1.printStackTrace();
-					} 
-		        } 
-		        else 
+		        }
+		        else
 		        {
 		        	System.out.println("Problème de détection de liens ou il s'agit d'un lien protégé");
 		        }
@@ -159,8 +198,9 @@ public class Extractor {
 		}
 		catch (IOException e) 
 		{
-			System.out.println("IOException dans Extractor au niveau de Jsoup");
-			//e.printStackTrace();
+			System.out.println("IOException dans Extractor au niveau de Jsoup, "
+					+ "probablement erreur de connexion internet ou bloqué par google");
+			System.out.println(e.getMessage());
 		}
 		return null;
 	}

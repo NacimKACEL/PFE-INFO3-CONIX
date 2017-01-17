@@ -5,6 +5,9 @@ import java.util.List;
 import com.models.Article;
 
 public interface ArticleService {
-	public void ajouter(Article a);
-	public List<Article> lister();
+	public List<Article> listArticles();
+	public Article getArticleByTitle(String title);
+	public void persistArticle(Article article);
+	public void updateArticle(Article article);
+	 public Article getArticleByLink(String link);
 }

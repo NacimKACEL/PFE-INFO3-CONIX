@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class LexiqueScorer implements TextScorer {
 	Map<String, String> mapPositifs = null;
@@ -61,5 +63,30 @@ public class LexiqueScorer implements TextScorer {
 		}
 		return (nbP-nbN >=0)?"Positif":"Negatif";
 	}
-
+	
+	public Set<String> getPosWords(String[] phrase)
+	{
+		Set<String> posWords = new HashSet<String>();
+		for(String word:phrase)
+		{
+			if (mapPositifs.get(word) != null)
+			{
+				posWords.add(word);
+			} 
+		}
+		return posWords;
+	}
+	public Set<String> getNegWords(String[] phrase)
+	{
+		Set<String> negWords = new HashSet<String>();
+		for(String word:phrase)
+		{
+			if (mapNegatifs.get(word) != null)
+			{
+				negWords.add(word);
+			} 
+		}
+		return negWords;
+	}
+	
 }

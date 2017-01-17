@@ -12,7 +12,7 @@ import com.models.Extractor;
 
 @Service
 public class ExtractorServiceImpl implements ExtractorService {
-	private Extractor extractor = new Extractor();
+	private Extractor extractor;
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public void setExtractor(Extractor extractor) {

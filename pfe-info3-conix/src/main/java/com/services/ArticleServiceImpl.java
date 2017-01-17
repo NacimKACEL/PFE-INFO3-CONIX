@@ -2,6 +2,7 @@ package com.services;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,17 +14,32 @@ import com.dao.ArticleDAO;
 public class ArticleServiceImpl implements ArticleService {
 	private ArticleDAO articleDAO;
 
-	public void setArticleDAO(ArticleDAO articleDAO) {
+	@Autowired
+	public void setArticleDAO(ArticleDAO articleDAO){
 		this.articleDAO = articleDAO;
 	}
 	
 	@Transactional
-	public void ajouter(Article a) {
-		this.articleDAO.ajouter(a);
+	public List<Article> listArticles() {
+		return this.articleDAO.listArticles();
 	}
 
-	@Transactional
-	public List<Article> lister() {
-		return this.articleDAO.lister();
+	@Override
+	public Article getArticleByTitle(String title) {
+		return this.articleDAO.getArticleByTitle(title);
 	}
+
+	@Override
+	public void persistArticle(Article article) {
+		this.articleDAO.persistArticle(article);
+	}
+
+	@Override
+	public void updateArticle(Article article) {
+		this.articleDAO.updateArticle(article);
+	}
+	 @Override
+	 public Article getArticleByLink(String link) {
+	  return this.articleDAO.getArticleByLink(link);
+	 }
 }
