@@ -3,11 +3,14 @@ package com.models;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -37,16 +40,18 @@ public class Article {
 	@Column(name = "[ts]")
 	private Date timestamp;
 	
-	@Column(name = "posWordsCsv")
-	private String posWordsCsv;
-
-	@Column(name = "negWordsCsv")
-	private String negWordsCsv;
+//	private String posWordsCsv;
+//
+//	private String negWordsCsv;
 	
-	@Transient	
+	@ElementCollection
+	@CollectionTable(name="[posWords]", joinColumns=@JoinColumn(name="[article_id]"))
+	@Column(name="posWord")	
 	private List<String> posWords; 
 	
-	@Transient	
+	@ElementCollection
+	@CollectionTable(name="[negWords]", joinColumns=@JoinColumn(name="[article_id]"))
+	@Column(name="negWord")	
 	private List<String> negWords;
 	
 	public Article() {}
@@ -151,19 +156,19 @@ public class Article {
 		this.negWords = negWords;
 	}
 	
-	public String getPosWordsCsv() {
-		return posWordsCsv;
-	}
-
-	public void setPosWordsCsv(String posWordsCsv) {
-		this.posWordsCsv = posWordsCsv;
-	}
-
-	public String getNegWordsCsv() {
-		return negWordsCsv;
-	}
-
-	public void setNegWordsCsv(String negWordsCsv) {
-		this.negWordsCsv = negWordsCsv;
-	}
+//	public String getPosWordsCsv() {
+//		return posWordsCsv;
+//	}
+//
+//	public void setPosWordsCsv(String posWordsCsv) {
+//		this.posWordsCsv = posWordsCsv;
+//	}
+//
+//	public String getNegWordsCsv() {
+//		return negWordsCsv;
+//	}
+//
+//	public void setNegWordsCsv(String negWordsCsv) {
+//		this.negWordsCsv = negWordsCsv;
+//	}
 }

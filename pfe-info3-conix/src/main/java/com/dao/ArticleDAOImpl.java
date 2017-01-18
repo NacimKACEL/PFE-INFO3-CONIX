@@ -93,8 +93,8 @@ public class ArticleDAOImpl implements ArticleDAO
 			article = (Article) requestSelectByTitle.uniqueResult();
 			if(article == null)
 				   return null;
-			article.setPosWords(ArticleDAOImpl.csv2list(article.getPosWordsCsv()));
-			article.setNegWords(ArticleDAOImpl.csv2list(article.getNegWordsCsv()));
+//			article.setPosWords(ArticleDAOImpl.csv2list(article.getPosWordsCsv()));
+//			article.setNegWords(ArticleDAOImpl.csv2list(article.getNegWordsCsv()));
 		}
 		catch(HibernateException he)
 		{
@@ -111,8 +111,8 @@ public class ArticleDAOImpl implements ArticleDAO
 	public void persistArticle(Article article)
 	{
 		Session session = this.sessionFactory.openSession();
-		article.setPosWordsCsv(ArticleDAOImpl.list2csv(article.getPosWords()));
-		article.setNegWordsCsv(ArticleDAOImpl.list2csv(article.getNegWords()));
+//		article.setPosWordsCsv(ArticleDAOImpl.list2csv(article.getPosWords()));
+//		article.setNegWordsCsv(ArticleDAOImpl.list2csv(article.getNegWords()));
 		session.merge(article);
 		session.flush();
 		session.close();		
@@ -158,8 +158,8 @@ public class ArticleDAOImpl implements ArticleDAO
 			article = (Article) requestSelectByLink.uniqueResult();
 			if(article == null)
 				return null;
-			article.setPosWords(ArticleDAOImpl.csv2list(article.getPosWordsCsv()));
-			article.setNegWords(ArticleDAOImpl.csv2list(article.getNegWordsCsv()));
+//			article.setPosWords(ArticleDAOImpl.csv2list(article.getPosWordsCsv()));
+//			article.setNegWords(ArticleDAOImpl.csv2list(article.getNegWordsCsv()));
 		}
 		catch(HibernateException he)
 		{

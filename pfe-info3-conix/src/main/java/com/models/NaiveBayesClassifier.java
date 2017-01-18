@@ -72,7 +72,7 @@ public class NaiveBayesClassifier implements TextScorer{
         Map<String, Double> mpPos = new HashMap<String, Double>();
         Map<String, Double> mpNeg = new HashMap<String, Double>();
         double maxi = -100;
-        String sMaxi ="";
+        String sMaxi;
         for(String w: phrase){
         	if(model.getKnowledgeBase().logLikelihoods.containsKey(w))
         	{	
