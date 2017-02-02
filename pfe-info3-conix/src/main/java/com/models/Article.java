@@ -45,12 +45,12 @@ public class Article {
 //	private String negWordsCsv;
 	
 	@ElementCollection
-	@CollectionTable(name="[posWords]", joinColumns=@JoinColumn(name="[article_id]"))
+	@CollectionTable(name="[PosWords]", joinColumns=@JoinColumn(name="[article_id]"))
 	@Column(name="posWord")	
 	private List<String> posWords; 
 	
 	@ElementCollection
-	@CollectionTable(name="[negWords]", joinColumns=@JoinColumn(name="[article_id]"))
+	@CollectionTable(name="[NegWords]", joinColumns=@JoinColumn(name="[article_id]"))
 	@Column(name="negWord")	
 	private List<String> negWords;
 	
