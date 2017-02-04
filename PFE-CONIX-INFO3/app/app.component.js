@@ -34,30 +34,37 @@ var AppComponent = (function () {
             .then(function (r) {
             _this.articles = r;
             _this.loaderStatus = "inactive";
-            //                var words = [
-            //                  {text: r[2].negWords[0]},
-            //                  {text: r[2].negWords[1]},
-            //                ];
-            var nwords = [];
             r.forEach(function (art) {
                 art.negWords.forEach(function (w) {
-                    nwords.push({ text: w, weight: 0.3 });
+                    $("#negWordsUL").append("<li><a href=\"#\" target=\"_blank\">" + w + "</a></li>");
                 });
             });
-            console.log('words negatifs', nwords);
-            $('#negWords').jQCloud(nwords);
-            var pwords = [];
             r.forEach(function (art) {
                 art.posWords.forEach(function (w) {
-                    pwords.push({ text: w, weight: 0.1 });
+                    $("#posWordsUL").append("<li><a href=\"#\" target=\"_blank\">" + w + "</a></li>");
                 });
             });
-            console.log('words positifs', pwords);
-            $('#posWords').jQCloud(pwords, {
-                colors: ["#800026", "#bd0026", "#e31a1c",
-                    "#fc4e2a", "#fd8d3c", "#feb24c", "#fed976",
-                    "#ffeda0", "#ffffcc"]
-            });
+            try {
+                TagCanvas.Start('canvasNeg', 'negWords', {
+                    textColour: '#ED0000',
+                    outlineColour: '#ED0000',
+                    reverse: true,
+                    depth: 0.8,
+                    maxSpeed: 0.05
+                });
+                TagCanvas.Start('canvasPos', 'posWords', {
+                    textColour: '#2C75FF',
+                    outlineColour: '#2C75FF',
+                    reverse: true,
+                    depth: 0.8,
+                    maxSpeed: 0.05
+                });
+            }
+            catch (e) {
+                // something went wrong, hide the canvas container
+                console.log("Une ereur est survenue lors de la création des nuages de mots");
+                document.getElementById('myCanvasContainer').style.display = 'none';
+            }
         });
     };
     return AppComponent;

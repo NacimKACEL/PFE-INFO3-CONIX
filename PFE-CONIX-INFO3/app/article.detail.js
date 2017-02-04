@@ -28,8 +28,7 @@ ArticleDetailComponent = __decorate([
         selector: 'article-detail',
         templateUrl: './article.detail.html',
         styleUrls: ['article.detail.css'],
-    }),
-    __metadata("design:paramtypes", [])
+    })
 ], ArticleDetailComponent);
 exports.ArticleDetailComponent = ArticleDetailComponent;
 //# sourceMappingURL=article.detail.js.map
