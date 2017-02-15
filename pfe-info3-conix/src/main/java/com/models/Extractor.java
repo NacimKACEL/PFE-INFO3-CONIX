@@ -52,14 +52,14 @@ public class Extractor
 	@Qualifier(value="articleService") 
 	public void setArticleService(ArticleService as)
 	{
-		logger.debug("Entered setArticleService");	
+		logger.warn("Entered setArticleService");	
 		this.articleService = as;
 	}
 	
 	public Extractor() 
 	{
 		nbReached = 0;
-		logger.debug("Nouvelle instance");
+		logger.warn("Nouvelle instance");
 		classifier = new NaiveBayesClassifier();
 		mapEntreprises = new HashMap<String, String>();
 		InputStream is = classLoader.getResourceAsStream("entreprises.txt");
@@ -146,18 +146,18 @@ public class Extractor
 		        Article article = null;
 		        if (matcher.find())
 		        {
-		        	logger.debug("Link matched" + matcher.group(1));
+		        	logger.warn("Link matched " + matcher.group(1));
 		        	if(this.nbReached == 10)
 		        	{
 		        		 this.nbReached = 0;
-		        		 logger.debug("Limite atteinte");
+		        		 logger.warn("Limite atteinte");
 		        		 break;
 		        	}
 		        	
 		        	if((article = this.articleService.getArticleByLink(matcher.group(1))) != null)
 		        	{
-		        		logger.debug("Article récupéré de la BDD...");
-		        		logger.info("ajout de l'article de la BDD" + article);
+		        		logger.warn("Article récupéré de la BDD...");
+		        		logger.info("ajout de l'article de la BDD " + article);
 		        		articles.add(article);
 		        		this.nbReached++;
 		        	}
@@ -175,7 +175,7 @@ public class Extractor
 									.replaceAll("[,?;.:/!<>&0-9()»«*%|\"{}]", "");
 							
 							this.nbReached++;
-							//logger.debug("Texte initial sans ponctuations etc.." + text);
+							//logger.warn("Texte initial sans ponctuations etc.." + text);
 							String[] words = text.split(" ");
 							
 						    /* Utilisation de treeTagger */
