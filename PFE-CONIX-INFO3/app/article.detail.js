@@ -13,9 +13,6 @@ var article_1 = require("./article");
 var ArticleDetailComponent = (function () {
     function ArticleDetailComponent() {
     }
-    ArticleDetailComponent.prototype.hide = function () {
-        this.article = null;
-    };
     return ArticleDetailComponent;
 }());
 __decorate([

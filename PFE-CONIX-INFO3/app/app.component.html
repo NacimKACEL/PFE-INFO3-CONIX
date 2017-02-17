@@ -1,40 +1,71 @@
 <div id="appFrame">
-	<h1 id="appTitle">{{title}}</h1>
-	<div>
-	<form>
-		<input id="searchBar" [(ngModel)]="searchEntry" [ngModelOptions]="{standalone: true}" type="text" placeholder="  ..." size="50"/>
-		<input (click)="search()" type="submit" value="search"/>
-	</form>	
+	<h1 id="appTitle" class="text-center">{{title}}</h1>
+	<div class="row" id="form">
+		<form >
+			<!-- <input id="searchBar" [(ngModel)]="searchEntry" [ngModelOptions]="{standalone: true}" type="text" placeholder="  ..." size="50"/>
+			<input (click)="search()" type="submit" value="search"/> -->
+			<div class="col-md-2"></div>
+			<div class="col-md-8">
+			    <div class="input-group">
+			      <input type="text" class="form-control" placeholder="Entreprise..." [(ngModel)]="searchEntry" [ngModelOptions]="{standalone: true}">
+			      <span class="input-group-btn">
+			        <button class="btn btn-primary" type="button" (click)="search()" id="bRechercher">Rechercher</button>
+			      </span>
+				</div>
+			</div>
+			<div class="col-md-2"></div> 
+		</form>
 	</div>
+	
+	<div [ngClass]="loaderStatus" class="text-center">
+		  <div class="progress center-block" style="width:50%;"> <!-- set to certain width -->
+		    <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" style="width: 100%;">
+		      <span>
+		        Chargement...
+		      </span>
+		    </div>
+		  </div>
+		</div>
+	
 	<div>
-		<div [ngClass]="loaderStatus"><img src="ressources/ajax-load.gif"/></div>
-		<div id="articleList">
-			<ul class="articles">
-				<li *ngFor="let article of articles; let i= index;" [class.selected]="article === selectedArticle" (click)="onSelect(article)">
-					<div class="score">
-						<div *ngIf="article.score >0 ">
-							<img src="ressources/up.ico"/>
-						</div>
-						<div *ngIf="article.score <0 ">
-							<img src="ressources/down.ico"/>
-						</div>
-					</div>
-					<span class="badge">{{i}}</span> 
-					<span>{{article.title}}</span>
-				</li>
-			</ul>
-		</div>
-		<div id="articleDetails">
-			<article-detail [article]="selectedArticle"></article-detail>
-		</div>
+	
+	<div class="panel-group" id="accordion">
+		<div class="panel panel-default" *ngFor="let article of articles; let i= index;">
+		    <div *ngIf="article.score >0 " class="panel-heading panel-heading-custom-pos">
+		      <h4 class="panel-title">
+		        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{i}}">
+		        <span class="badge">{{i}}</span> {{article.title}}</a>
+		      </h4>
+		    </div>
+		     <div *ngIf="article.score <0 " class="panel-heading panel-heading-custom-neg">
+		      <h4 class="panel-title">
+		        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{i}}">
+		        <span class="badge">{{i}}</span> {{article.title}}</a>
+		      </h4>
+		    </div>
+		     <div *ngIf="article.score ==0 " class="panel-heading">
+		      <h4 class="panel-title">
+		        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{i}}">
+		       <span class="badge">{{i}}</span> {{article.title}}</a>
+		      </h4>
+		    </div>
+		    <div id="collapse{{i}}" class="panel-collapse collapse">
+		      <div class="panel-body"> <article-detail [article]="article"></article-detail> </div>
+		    </div>
+  		</div>
+  	</div>
 		
-		<div id="myCanvasContainer">
-	      <canvas width="500" height="400" id="canvasNeg">
-	        <p>Anything in here will be replaced on browsers that support the canvas element</p>
-	      </canvas>
-	       <canvas width="500" height="400" id="canvasPos">
-	        <p>Anything in here will be replaced on browsers that support the canvas element</p>
-	      </canvas>
+		<div id="myCanvasContainer" [ngClass]="tagCanvasStatus">
+			<div class="row">
+			<div class="col-md-2"></div>
+		      <canvas width="380" height="350" id="canvasNeg" class="col-md-4" >
+		        <p>Anything in here will be replaced on browsers that support the canvas element</p>
+		      </canvas>
+		       <canvas width="380" height="350" id="canvasPos" class="col-md-4">
+		        <p>Anything in here will be replaced on browsers that support the canvas element</p>
+		      </canvas>
+		      <div class="col-md-2"></div>
+		    </div>
 	    </div>
 		<div id="negWords">
 			<ul id="negWordsUL">

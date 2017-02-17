@@ -12,8 +12,4 @@ import { Article } from './article';
 export class ArticleDetailComponent {
 	@Input()
 	article : Article;
-
-	hide() : void {
-		this.article = null;
-	}
 }
