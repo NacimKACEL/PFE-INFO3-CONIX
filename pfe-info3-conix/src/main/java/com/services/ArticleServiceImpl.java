@@ -25,11 +25,6 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public Article getArticleByTitle(String title) {
-		return this.articleDAO.getArticleByTitle(title);
-	}
-
-	@Override
 	public void persistArticle(Article article) {
 		this.articleDAO.persistArticle(article);
 	}

@@ -36,6 +36,3 @@ public class ExtractorController{
 		return this.extractorService.extractJsonArticlesUTF8(firmName);
 	}
 }
-
-
-

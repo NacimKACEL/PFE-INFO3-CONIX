@@ -40,10 +40,6 @@ public class Article {
 	@Column(name = "[ts]")
 	private Date timestamp;
 	
-//	private String posWordsCsv;
-//
-//	private String negWordsCsv;
-	
 	@ElementCollection
 	@CollectionTable(name="[PosWords]", joinColumns=@JoinColumn(name="[article_id]"))
 	@Column(name="posWord")	
@@ -155,20 +151,4 @@ public class Article {
 	public void setNegWords(List<String> negWords) {
 		this.negWords = negWords;
 	}
-	
-//	public String getPosWordsCsv() {
-//		return posWordsCsv;
-//	}
-//
-//	public void setPosWordsCsv(String posWordsCsv) {
-//		this.posWordsCsv = posWordsCsv;
-//	}
-//
-//	public String getNegWordsCsv() {
-//		return negWordsCsv;
-//	}
-//
-//	public void setNegWordsCsv(String negWordsCsv) {
-//		this.negWordsCsv = negWordsCsv;
-//	}
 }

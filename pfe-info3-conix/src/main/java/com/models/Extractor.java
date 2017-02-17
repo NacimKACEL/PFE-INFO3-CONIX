@@ -18,6 +18,8 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.xml.sax.InputSource;
@@ -27,35 +29,50 @@ import com.services.ArticleService;
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import de.l3s.boilerpipe.extractors.ArticleExtractor;
 
-public class Extractor {
+public class Extractor 
+{
+	private static final Logger logger = LoggerFactory.getLogger(Extractor.class);
+	
 	TextScorer classifier = null;
+	
 	int nbReached = 0;
+	
 	ClassLoader classLoader = getClass().getClassLoader();
+	
 	ArticleService articleService;
+	
 	/* NomEntreprise, Secteur */
 	Map<String, String> mapEntreprises = null;
+	
 	public Map<String, String> getMapEntreprises() {
 		return mapEntreprises;
 	}
+	
 	@Autowired(required=true)
 	@Qualifier(value="articleService") 
-	public void setArticleService(ArticleService as){
-		System.out.println("Entered in set ArticleService de Extractor");	
+	public void setArticleService(ArticleService as)
+	{
+		logger.warn("Entered setArticleService");	
 		this.articleService = as;
 	}
-	public Extractor() {
-		System.out.println("Nouvelle instance d'Extractor");
+	
+	public Extractor() 
+	{
+		nbReached = 0;
+		logger.warn("Nouvelle instance");
 		classifier = new NaiveBayesClassifier();
 		mapEntreprises = new HashMap<String, String>();
 		InputStream is = classLoader.getResourceAsStream("entreprises.txt");
 		BufferedReader in = new BufferedReader(new InputStreamReader(is));
+		
 		/* Chargement du fichier */
 		
 		String line = null;
 		String[] arraySplit = new String[4];
-		// A editer : quand l'entreprise n'est pas référencée dans la base
+		// TODO: quand l'entreprise n'est pas référencée dans la base
 		int i = 0;
-		try {
+		try 
+		{
 			while ((line = in.readLine()) != null) 
 			{
 				i++;
@@ -66,13 +83,15 @@ public class Extractor {
 			}
 			in.close();
 			is.close();
-		} catch (IOException e) 
+		}
+		catch (IOException e) 
 		{
-			System.out.println("Problème dans la lecture du fichier Entreprises");
+			logger.error("Problème dans la lecture du fichier Entreprises");
 		}			
 	}
 
-	public ArrayList<Article> extract(String firmName){		
+	public ArrayList<Article> extract(String firmName)
+	{		
 		this.nbReached = 0;
 		try 
 		{
@@ -83,15 +102,26 @@ public class Extractor {
 			if(mapEntreprises.containsKey(firmName))
 			{
 				secteur = mapEntreprises.get(firmName);
+				logger.info("Entreprise " + firmName + " trouvée");
+			}
+			else
+			{
+				logger.info("Entreprise " + firmName + " non trouvée");
 			}
 			
 			 /* Web Crawler */
 //			On utilise Google comme moteur de recherche
-			String url = "http://www.google.fr/search?q=" + firmName +" "
-			+ secteur +"&espv=2&source=lnms&num=20&tbm=nws&sa=X&tbs=sbd:1";
+			String url = "http://www.google.fr/search?q=" 
+			+ firmName + " "
+			+ secteur + 
+			"&espv=2&source=lnms&num=20&tbm=nws&sa=X&tbs=sbd:1";
+			
 			Connection.Response cr = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (compatible; MSIE 10.6; Windows NT 6.1;"
-                    		+ "Trident/5.0; InfoPath.2; SLCC1; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR  2.0.50727) 3gpp-gba UNTRUSTED/1.0")
+                    		+ "Trident/5.0; InfoPath.2; SLCC1;"
+                    		+ " .NET CLR 3.0.4506.2152;"
+                    		+ " .NET CLR 3.5.30729; .NET CLR  2.0.50727)"
+                    		+ " 3gpp-gba UNTRUSTED/1.0")
                     .cookie("auth", "token")
                     .timeout(5000)
                     .execute();
@@ -116,16 +146,18 @@ public class Extractor {
 		        Article article = null;
 		        if (matcher.find())
 		        {
+		        	logger.warn("Link matched " + matcher.group(1));
 		        	if(this.nbReached == 10)
 		        	{
 		        		 this.nbReached = 0;
-		        		 System.out.println("Limite atteinte");
+		        		 logger.warn("Limite atteinte");
 		        		 break;
 		        	}
 		        	
 		        	if((article = this.articleService.getArticleByLink(matcher.group(1))) != null)
 		        	{
-		        		System.out.println("Article récupéré...");
+		        		logger.warn("Article récupéré de la BDD...");
+		        		logger.info("ajout de l'article de la BDD " + article);
 		        		articles.add(article);
 		        		this.nbReached++;
 		        	}
@@ -138,13 +170,17 @@ public class Extractor {
 							InputSource isource = new InputSource();
 							isource.setEncoding("UTF-8");
 							isource.setByteStream(urlBis.openStream());
-							String text = ArticleExtractor.INSTANCE.getText(isource).toLowerCase().replaceAll("[,?;.:/!<>&0-9()»«*%|\"{}]", "");
+							String text = ArticleExtractor.INSTANCE.getText(isource)
+									.toLowerCase()
+									.replaceAll("[,?;.:/!<>&0-9()»«*%|\"{}]", "");
+							
 							this.nbReached++;
-//							System.out.println("Texte initial sans ponctuations etc.." + text);
+							//logger.warn("Texte initial sans ponctuations etc.." + text);
 							String[] words = text.split(" ");
 							
 						    /* Utilisation de treeTagger */
 							//ArrayList<String> str = tagger.tag(words);
+							
 							/* Utilisation de Stemmer */
 							ArrayList<String> str = stemmer.tag(words);
 							
@@ -154,43 +190,33 @@ public class Extractor {
 							 * */
 							String sc = classifier.score(str);
 							LexiqueScorer lS = new LexiqueScorer();
-//							for(String s:lS.getPosWords(words))
-//							{
-//								System.out.println("Pos List" + s);
-//							}
-//							for(String s:lS.getNegWords(words))
-//							{
-//								System.out.println("Neg List" + s);
-//							}
-//							System.out.println("Score sur ..." + index + "..."+ sc);
 				        	article = new Article(index, matcher.group(1), 
 				        			links.get(index).text(), descriptions.get(index).text(),
 				        			String.join(" ", str), (sc == "Positif")?1:-1, 
 				        					new ArrayList<String>(lS.getPosWords(words)), 
 				        					new ArrayList<String>(lS.getNegWords(words)));
-				        	
+				        	logger.info("adding article " + article);
 				        	articles.add(article);
 				        	this.articleService.persistArticle(article);	
 						}
 						catch (MalformedURLException e1)
 						{
-							System.out.println("URL mal formée...");
+							logger.error("URL mal formée...");
 						}
 						catch (BoilerpipeProcessingException e)
 						{
-							//e.printStackTrace();
-							System.out.println("Problème accès URL avec BoilerPipe");
+							//System.out.println(e.getMessage());
+							logger.error("Problème accès URL avec BoilerPipe");
 						}
 						catch (IOException e1) {
-							System.out.println("IOException au niveau de Boilerpipe");
-							System.out.println(e1.getMessage());
-//							e1.printStackTrace();
+							logger.error("IOException au niveau de Boilerpipe");
+							logger.error(e1.getMessage());
 						}
 					}
 		        }
 		        else
 		        {
-		        	System.out.println("Problème de détection de liens ou il s'agit d'un lien protégé");
+		        	logger.error("Problème de détection de liens ou il s'agit d'un lien protégé");
 		        }
 //				tagger.destroy();
 	        }
@@ -198,9 +224,9 @@ public class Extractor {
 		}
 		catch (IOException e) 
 		{
-			System.out.println("IOException dans Extractor au niveau de Jsoup, "
+			logger.error("IOException dans Extractor au niveau de Jsoup, "
 					+ "probablement erreur de connexion internet ou bloqué par google");
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 		return null;
 	}

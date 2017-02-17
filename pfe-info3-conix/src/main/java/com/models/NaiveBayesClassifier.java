@@ -69,14 +69,14 @@ public class NaiveBayesClassifier implements TextScorer{
 	{
 		
         String classe = model.predict(String.join(" ",phrase));
+/* Decommenter pour tenter de suivre le process de la méthode de scoring ! Non pertinent pour le moment */
+/*
         Map<String, Double> mpPos = new HashMap<String, Double>();
         Map<String, Double> mpNeg = new HashMap<String, Double>();
         double maxi = -100;
-        String sMaxi;
         for(String w: phrase){
         	if(model.getKnowledgeBase().logLikelihoods.containsKey(w))
         	{	
-        		//System.out.println("hey " + model.getKnowledgeBase().logLikelihoods.get(w));
         		if(
         				(model.getKnowledgeBase().logLikelihoods.get(w).get("Positif") - 
         						model.getKnowledgeBase().logLikelihoods.get(w).get("Negatif") > maxi)
@@ -85,7 +85,6 @@ public class NaiveBayesClassifier implements TextScorer{
         				)
         		{
         			maxi = model.getKnowledgeBase().logLikelihoods.get(w).get("Positif");
-        			sMaxi = w;
         		}
         		mpPos.put(w, model.getKnowledgeBase().logLikelihoods.get(w).get("Positif"));
         		mpNeg.put(w, model.getKnowledgeBase().logLikelihoods.get(w).get("Negatif"));
@@ -93,11 +92,7 @@ public class NaiveBayesClassifier implements TextScorer{
         }
         Stream<Map.Entry<String,Double>> sorted = mpPos.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue()));
         sorted = sorted.limit(3);
-        sorted.forEach(s -> {System.out.println("hey Po " + s.getKey() + " " + s.getValue());});
-//        System.out.println("En fait..." + sMaxi + " avec " +maxi);
- 
-        
-//        System.out.format("La phrase \"%s\" a été classée comme \n\"%s\".%n", phrase, classe);
+*/ 
         return classe;        
 
 	}
