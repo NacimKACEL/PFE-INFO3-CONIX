@@ -2,18 +2,14 @@
 	<h1 id="appTitle" class="text-center">{{title}}</h1>
 	<div class="row" id="form">
 		<form >
-			<!-- <input id="searchBar" [(ngModel)]="searchEntry" [ngModelOptions]="{standalone: true}" type="text" placeholder="  ..." size="50"/>
-			<input (click)="search()" type="submit" value="search"/> -->
-			<div class="col-md-2"></div>
-			<div class="col-md-8">
+			<div class="col-md-8 col-md-push-2">
 			    <div class="input-group">
 			      <input type="text" class="form-control" placeholder="Entreprise..." [(ngModel)]="searchEntry" [ngModelOptions]="{standalone: true}">
 			      <span class="input-group-btn">
-			        <button class="btn btn-primary" type="button" (click)="search()" id="bRechercher">Rechercher</button>
+			        <button class="btn btn-primary" type="submit" (click)="search()" id="bRechercher">Rechercher</button>
 			      </span>
 				</div>
-			</div>
-			<div class="col-md-2"></div> 
+			</div> 
 		</form>
 	</div>
 	
@@ -26,7 +22,6 @@
 		    </div>
 		  </div>
 		</div>
-	
 	<div>
 	
 	<div class="panel-group" id="accordion">
@@ -73,7 +68,6 @@
 		</div>
 		<div id="posWords">
 			<ul id="posWordsUL">
-			
 			</ul>
 		</div>
 	</div>

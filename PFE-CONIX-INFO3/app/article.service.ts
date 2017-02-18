@@ -11,7 +11,6 @@ declare var $:JQueryStatic;
 
 @Injectable()
 export class ArticleService {
-/* TODO: Make the Service available */
 	constructor(private configuration : Configuration, private http : Http) { }
 
 	extract( query : string) {

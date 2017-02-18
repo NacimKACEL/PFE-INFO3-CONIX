@@ -88,7 +88,8 @@ export class AppComponent {
                       depth: 0.8,
                       maxSpeed: 0.05
                     });
-                } catch(e) {
+                } catch(e) 
+                {
                     console.log("Une ereur est survenue lors de la création des nuages de mots");
                   document.getElementById('myCanvasContainer').style.display = 'none';
                 }
