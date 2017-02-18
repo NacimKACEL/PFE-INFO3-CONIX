@@ -7,11 +7,12 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.datumbox.opensource.classifiers.NaiveBayes;
 import com.datumbox.opensource.dataobjects.NaiveBayesKnowledgeBase;
@@ -19,7 +20,7 @@ import com.datumbox.opensource.dataobjects.NaiveBayesKnowledgeBase;
 
 public class NaiveBayesClassifier implements TextScorer{
 	ClassLoader classLoader = getClass().getClassLoader();
-	
+	private static final Logger logger = LoggerFactory.getLogger(LexiqueScorer.class);
 	private NaiveBayes model = null;
 	public NaiveBayesClassifier()
 	{
@@ -31,13 +32,16 @@ public class NaiveBayesClassifier implements TextScorer{
         //Chargement dans la mémoire
         Map<String, String[]> trainingExamples = new HashMap<>();
         for(Map.Entry<String, URL> entry : trainingFiles.entrySet()) {
-            try {
+            try 
+            {
 				trainingExamples.put(entry.getKey(), readLines(entry.getValue()));
-			} catch (IOException e) {
-				System.out.println("IOException dans NaiveBayesClassifier");
-//				e.printStackTrace();
+			} 
+            catch (IOException e) 
+            {
+				logger.error("IOException dans NaiveBayesClassifier : " + e.getMessage());
 			}
         }
+        
         //Entrainement du modèle
         this.model = new NaiveBayes();
         this.model.setChisquareCriticalValue(0.01); //0.01 pvalue, 6.63

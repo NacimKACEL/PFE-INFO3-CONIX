@@ -29,10 +29,6 @@ public class ArticleServiceImpl implements ArticleService {
 		this.articleDAO.persistArticle(article);
 	}
 
-	@Override
-	public void updateArticle(Article article) {
-		this.articleDAO.updateArticle(article);
-	}
 	 @Override
 	 public Article getArticleByLink(String link) {
 	  return this.articleDAO.getArticleByLink(link);

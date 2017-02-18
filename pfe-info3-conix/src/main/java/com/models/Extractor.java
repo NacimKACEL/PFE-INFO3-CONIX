@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,14 +53,14 @@ public class Extractor
 	@Qualifier(value="articleService") 
 	public void setArticleService(ArticleService as)
 	{
-		logger.warn("Entered setArticleService");	
+		logger.info("Entered setArticleService");	
 		this.articleService = as;
 	}
 	
 	public Extractor() 
 	{
 		nbReached = 0;
-		logger.warn("Nouvelle instance");
+		logger.info("Nouvelle instance");
 		classifier = new NaiveBayesClassifier();
 		mapEntreprises = new HashMap<String, String>();
 		InputStream is = classLoader.getResourceAsStream("entreprises.txt");
@@ -69,7 +70,7 @@ public class Extractor
 		
 		String line = null;
 		String[] arraySplit = new String[4];
-		// TODO: quand l'entreprise n'est pas référencée dans la base
+		// TODO: quand l'entreprise n'est pas référencée dans la base, trouver une API
 		int i = 0;
 		try 
 		{
@@ -86,12 +87,26 @@ public class Extractor
 		}
 		catch (IOException e) 
 		{
-			logger.error("Problème dans la lecture du fichier Entreprises");
+			logger.error("FATAL Problème dans la lecture du fichier Entreprises");
+			System.exit(-1);
 		}			
 	}
 
 	public ArrayList<Article> extract(String firmName)
-	{		
+	{	
+		Properties prop = new Properties();
+		String filename = "config.properties";
+		InputStream input = Extractor.class.getClassLoader().getResourceAsStream(filename);
+		try
+		{
+			prop.load(input);
+		}
+		catch (IOException e2) 
+		{
+			logger.error("FATAL Problème dans la lecture du fichier properties");
+			System.exit(-1);
+		}
+		
 		this.nbReached = 0;
 		try 
 		{
@@ -110,11 +125,11 @@ public class Extractor
 			}
 			
 			 /* Web Crawler */
-//			On utilise Google comme moteur de recherche
-			String url = "http://www.google.fr/search?q=" 
-			+ firmName + " "
+			//	Le moteur de recherche est celui configuré dans config.properties
+			String url = prop.getProperty("searchengine") 
+			+ firmName + "%20"
 			+ secteur + 
-			"&espv=2&source=lnms&num=20&tbm=nws&sa=X&tbs=sbd:1";
+			prop.getProperty("options");
 			
 			Connection.Response cr = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (compatible; MSIE 10.6; Windows NT 6.1;"
@@ -127,55 +142,66 @@ public class Extractor
                     .execute();
 			doc = Jsoup.parse(cr.body(), "ISO-8859-1");
 				
-//			On récupère les titres h3 avec la description(ayant la classe st)
-			Elements links = doc.select("h3 > a[href]");
-			Elements descriptions = doc.select(".st");
+//			On récupère les titres h3 avec la description(ayant la classe configurée)
+			Elements links = doc.select(prop.getProperty("links"));
+			Elements descriptions = doc.select(prop.getProperty("class"));
 			
 			int nbArticles = links.size();
 			ArrayList<Article> articles = new ArrayList<Article>();
 			
-			Pattern pattern = Pattern.compile("url=(.*?)&");
+			Pattern pattern = Pattern.compile(prop.getProperty("urlPattern"));
+			
 			/* Utilisation de treeTagger  ou d'un Stemmer*/
 //			Tagger tagger = new Tagger();
 			Stemmer stemmer = new Stemmer();
 			
+			logger.debug("crawler link " + url);
+			logger.debug("Crawler success with : " + nbArticles + " articles");
 			int index;
 			for(index = 0; index <nbArticles ; index++)
 			{
+				
+				//logger.info("URL...avant traitement " + links.get(index).attr("href"));
 				Matcher matcher = pattern.matcher(links.get(index).attr("href"));
 		        Article article = null;
+		        if(this.nbReached == 10)
+	        	{
+	        		 this.nbReached = 0;
+	        		 logger.info("Limite atteinte");
+	        		 break;
+	        	}
+		        
 		        if (matcher.find())
 		        {
-		        	logger.warn("Link matched " + matcher.group(1));
-		        	if(this.nbReached == 10)
-		        	{
-		        		 this.nbReached = 0;
-		        		 logger.warn("Limite atteinte");
-		        		 break;
-		        	}
+		        	String localLink = matcher.group(1);
+		        	logger.info("Lien matché " + localLink);
 		        	
-		        	if((article = this.articleService.getArticleByLink(matcher.group(1))) != null)
+		        	// On tente de récupérer l'article depuis la BDD 
+		        	if((article = this.articleService.getArticleByLink(localLink)) != null)
 		        	{
-		        		logger.warn("Article récupéré de la BDD...");
-		        		logger.info("ajout de l'article de la BDD " + article);
+		        		logger.info("Article récupéré de la BDD et ajout de ..." + article);
 		        		articles.add(article);
 		        		this.nbReached++;
 		        	}
+		        	
 		        	else 
 		        	{
 		        		URL urlBis;
 						try 
 						{
-							urlBis = new URL(matcher.group(1));
+							// Tentative de connexion avec l'url
+							urlBis = new URL(localLink);
 							InputSource isource = new InputSource();
 							isource.setEncoding("UTF-8");
 							isource.setByteStream(urlBis.openStream());
+							
+							// On retirer la ponctuation
 							String text = ArticleExtractor.INSTANCE.getText(isource)
 									.toLowerCase()
 									.replaceAll("[,?;.:/!<>&0-9()»«*%|\"{}]", "");
 							
-							this.nbReached++;
-							//logger.warn("Texte initial sans ponctuations etc.." + text);
+							
+							logger.debug("Texte initial sans ponctuations etc.." + text);
 							String[] words = text.split(" ");
 							
 						    /* Utilisation de treeTagger */
@@ -190,15 +216,21 @@ public class Extractor
 							 * */
 							String sc = classifier.score(str);
 							LexiqueScorer lS = new LexiqueScorer();
-				        	article = new Article(index, matcher.group(1), 
+							
+				        	article = new Article(index, localLink, 
 				        			links.get(index).text(), descriptions.get(index).text(),
 				        			String.join(" ", str), (sc == "Positif")?1:-1, 
 				        					new ArrayList<String>(lS.getPosWords(words)), 
 				        					new ArrayList<String>(lS.getNegWords(words)));
-				        	logger.info("adding article " + article);
+				        	logger.info("ajout de l'article " + article);
 				        	articles.add(article);
-				        	this.articleService.persistArticle(article);	
+				        	// Enregistrement de l'article dans la BDD
+				        	this.articleService.persistArticle(article);
+				        	// On incrémente le nombre d'articles trouvés
+							this.nbReached++;
 						}
+						// Gestion des exceptions - Ce devrait plus être des warning que Erreur
+						// Car le programme peut tout de même continuer de tourner
 						catch (MalformedURLException e1)
 						{
 							logger.error("URL mal formée...");
@@ -224,9 +256,10 @@ public class Extractor
 		}
 		catch (IOException e) 
 		{
-			logger.error("IOException dans Extractor au niveau de Jsoup, "
+			logger.error("FATAL IOException dans Extractor au niveau de Jsoup, "
 					+ "probablement erreur de connexion internet ou bloqué par google");
 			logger.error(e.getMessage());
+			System.exit(-1);
 		}
 		return null;
 	}

@@ -7,6 +7,5 @@ public interface ArticleDAO
 {
 	public List<Article> listArticles();
 	public void persistArticle(Article article);
-	public void updateArticle(Article article);
 	public Article getArticleByLink(String link);
 }

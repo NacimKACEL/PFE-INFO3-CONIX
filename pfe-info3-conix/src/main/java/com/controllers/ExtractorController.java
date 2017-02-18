@@ -12,6 +12,7 @@ import com.services.ExtractorService;
 
 @RestController
 public class ExtractorController{
+	
 	@Autowired
 	ExtractorService extractorService;
 	
@@ -20,6 +21,9 @@ public class ExtractorController{
 	public void setExtractorService(ExtractorService es){
 		this.extractorService = es;
 	}
+	
+	/* A des fins de débuggage */
+	/*
 	@CrossOrigin(origins = "*")
 	@RequestMapping(value="/extract/{firmName}/{id}", method = RequestMethod.GET, produces = "application/json")
 	public String getExtractedArticleById(@PathVariable String firmName, @PathVariable int id){
@@ -30,6 +34,8 @@ public class ExtractorController{
 	public String getExtractedArticles(@PathVariable String firmName){
 		return this.extractorService.extractJsonArticles(firmName);
 	}
+	*/
+	
 	@CrossOrigin(origins = "*")
 	@RequestMapping(value="/extract/utf8/{firmName}", method = RequestMethod.GET, produces = "application/json")
 	public byte[] getExtractedArticlesUTF8(@PathVariable String firmName){

@@ -22,7 +22,7 @@ public class Stemmer {
 			}
 			else
 			{
-//				System.out.println("WhiteWord found "+ word);
+//				System.out.println("Bug ...");
 			}
 			
 		}

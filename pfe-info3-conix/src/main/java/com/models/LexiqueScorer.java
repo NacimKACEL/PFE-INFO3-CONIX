@@ -10,10 +10,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class LexiqueScorer implements TextScorer {
 	Map<String, String> mapPositifs = null;
 	Map<String, String> mapNegatifs = null;
 	ClassLoader classLoader = getClass().getClassLoader();
+	private static final Logger logger = LoggerFactory.getLogger(LexiqueScorer.class);
 	public LexiqueScorer()
 	{
 		mapPositifs = new HashMap<String, String>();
@@ -42,8 +46,7 @@ public class LexiqueScorer implements TextScorer {
 			is.close();
 		} catch (IOException e) 
 		{
-			System.out.println("IOException dans LexiqueScorer.java au niveau du constructeur");
-//			e.printStackTrace();
+			logger.error("IOException au niveau du constructeur : " + e.getMessage());
 		}
 	}
 	@Override
@@ -55,10 +58,10 @@ public class LexiqueScorer implements TextScorer {
 			if (mapPositifs.get(word) != null)
 			{
 				nbP ++;
-//				System.out.println("positif " + word);
+				logger.debug("positif " + word);
 			} else if (mapNegatifs.get(word) != null){
 				nbN ++;
-//				System.out.println("negatif " + word);
+				logger.debug("negatif " + word);
 			}
 		}
 		return (nbP-nbN >=0)?"Positif":"Negatif";

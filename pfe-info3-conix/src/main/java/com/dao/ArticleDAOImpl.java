@@ -15,15 +15,6 @@ public class ArticleDAOImpl implements ArticleDAO
 {
 	private static final String HQL_SELECT_ALL = "FROM Article";
 	private static final String HQL_SELECT_BY_LINK = "FROM Article WHERE link = :link";
-	private static final String HQL_UPDATE_BY_TITLE = 		
-			"UPDATE"+
-					"Article"+
-					"SET"+ 
-					"timestamp = :timestamp,"+
-					"score = :score,"+
-					"posWordsCsv = :posWordsCsv,"+
-					"negWordsCsv = :negWordsCsv,"+
-					"WHERE title = :title";
 
 	private SessionFactory sessionFactory;
 
@@ -59,32 +50,6 @@ public class ArticleDAOImpl implements ArticleDAO
 		session.flush();
 		session.close();		
 	}
-
-	public void updateArticle(Article article){
-		Session session = this.sessionFactory.openSession();
-		Transaction transaction = null;
-		System.out.println("Entered update article");
-		Query updateRequest = session.createQuery(HQL_UPDATE_BY_TITLE);
-		updateRequest.setParameter("ts", article.getTimestamp());
-		updateRequest.setParameter("score", article.getScore());
-
-		try
-		{
-			transaction = session.beginTransaction();
-			int success = updateRequest.executeUpdate();
-
-			if(success == -1) throw new HibernateException("Hibernate: Update of "+article.getTitle()+" Failed");
-		}
-		catch(HibernateException he)
-		{
-			if(he != null) transaction.rollback();
-			he.printStackTrace();			
-		}
-		finally
-		{
-			session.close();
-		}
-	}	
 
 	public Article getArticleByLink(String link)
 	{
