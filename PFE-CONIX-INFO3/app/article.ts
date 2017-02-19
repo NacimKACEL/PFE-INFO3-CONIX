@@ -4,4 +4,6 @@ export class Article {
 	link : string;
 	description : string ;
 	score: number ;
+	negWords: Array<string>;
+    posWords: Array<string>;
 }

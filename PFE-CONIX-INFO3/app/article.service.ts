@@ -6,11 +6,11 @@ import { Article } from './article';
 import { Configuration } from './configuration';
 
 import 'rxjs/add/operator/toPromise';
+declare var $:JQueryStatic;
 
 
 @Injectable()
 export class ArticleService {
-/* TODO: Make the Service available */
 	constructor(private configuration : Configuration, private http : Http) { }
 
 	extract( query : string) {

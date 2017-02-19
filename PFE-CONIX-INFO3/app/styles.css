@@ -1,0 +1,14 @@
+body {
+  background-color:#f0f0f0 ;
+}
+#canvasNeg, #canvasPos
+{
+	background-color:#fff;
+	-moz-border-radius:7px;
+	-webkit-border-radius:7px;
+	border-radius:7px;
+}
+#canvasNeg
+{
+	margin-right: 5px;
+}

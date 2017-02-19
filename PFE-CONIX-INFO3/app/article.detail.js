@@ -13,9 +13,6 @@ var article_1 = require("./article");
 var ArticleDetailComponent = (function () {
     function ArticleDetailComponent() {
     }
-    ArticleDetailComponent.prototype.hide = function () {
-        this.article = null;
-    };
     return ArticleDetailComponent;
 }());
 __decorate([
@@ -28,8 +25,7 @@ ArticleDetailComponent = __decorate([
         selector: 'article-detail',
         templateUrl: './article.detail.html',
         styleUrls: ['article.detail.css'],
-    }),
-    __metadata("design:paramtypes", [])
+    })
 ], ArticleDetailComponent);
 exports.ArticleDetailComponent = ArticleDetailComponent;
 //# sourceMappingURL=article.detail.js.map

@@ -5,6 +5,7 @@ import com.models.Article;
 
 public interface ArticleDAO 
 {
-	public void ajouter(Article p);
-	public List<Article> lister();
+	public List<Article> listArticles();
+	public void persistArticle(Article article);
+	public Article getArticleByLink(String link);
 }

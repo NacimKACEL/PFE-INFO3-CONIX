@@ -1,28 +1,71 @@
 package com.models;
 
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "Article")
 public class Article {
-	int id;
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name = "[id]")
+	private int id;
 
-	String link;
-	String title;
-	String description;
-	String fullText;
-	Integer score;
-	ArrayList<String> posWords;
-	ArrayList<String> negWords;
-	public String getFullText() {
-		return fullText;
-	}
-
-	public void setFullText(String fullText) {
+	@Column(name = "[link]")
+	private String link;
+	
+	@Column(name = "[title]")
+	private String title;
+	
+	@Column(name = "[description]")
+	private String description;
+	
+	@Column(name = "[fullText]")
+	private String fullText;
+	
+	@Column(name = "[score]")
+	private Integer score;
+	
+	@Column(name = "[ts]")
+	private Date timestamp;
+	
+	@ElementCollection
+	@CollectionTable(name="[PosWords]", joinColumns=@JoinColumn(name="[article_id]"))
+	@Column(name="posWord")	
+	private List<String> posWords; 
+	
+	@ElementCollection
+	@CollectionTable(name="[NegWords]", joinColumns=@JoinColumn(name="[article_id]"))
+	@Column(name="negWord")	
+	private List<String> negWords;
+	
+	public Article() {}
+	
+	public Article(int id, String link, String title, String description, String fullText, Integer score, List<String> posWords, List<String> negWords) {
+		super();
+//		this.id = id;
+		this.link = link;
+		this.title = title;
+		this.description = description;
 		this.fullText = fullText;
+		this.score = score;
+		this.posWords = posWords;
+		this.negWords = negWords; 
 	}
 
 	public Article(int id, String link, String title, String description, String fullText, Integer score) {
 		super();
-		this.id = id;
+//		this.id = id;
 		this.link = link;
 		this.title = title;
 		this.description = description;
@@ -30,41 +73,18 @@ public class Article {
 		this.score = score;
 	}
 	
-	public Integer getScore() {
-		return score;
+	@Override
+	public String toString() {
+		return "Article [id=" + id + ", link=" + link + ", title=" + title + ", description=" + description
+				+ ", fullText=" + fullText + ", score=" + score + ", timestamp=" + timestamp + ", posWords=" + posWords + ", negWords=" + negWords + "]";
+	}
+	//Getters & Setters
+	public Date getTimestamp() {
+		return timestamp;
 	}
 
-	public void setScore(Integer score) {
-		this.score = score;
-	}
-
-	public ArrayList<String> getPosWords() {
-		return posWords;
-	}
-
-	public void setPosWords(ArrayList<String> posWords) {
-		this.posWords = posWords;
-	}
-
-	public ArrayList<String> getNegWords() {
-		return negWords;
-	}
-
-	public void setNegWords(ArrayList<String> negWords) {
-		this.negWords = negWords;
-	}
-
-	public Article(int id, String link, String title, String description, String fullText, Integer score,
-			ArrayList<String> posWords, ArrayList<String> negWords) {
-		super();
-		this.id = id;
-		this.link = link;
-		this.title = title;
-		this.description = description;
-		this.fullText = fullText;
-		this.score = score;
-		this.posWords = posWords;
-		this.negWords = negWords;
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public int getId() {
@@ -99,12 +119,35 @@ public class Article {
 		this.description = description;
 	}
 
-	public Article() {
-
+	public String getFullText() {
+		return fullText;
 	}
 
-	@Override
-	public String toString() {
-		return "Article [link=" + link + ", title=" + title + ", description=" + description + "]";
+	public void setFullText(String fullText) {
+		this.fullText = fullText;
+	}
+
+	public Integer getScore() {
+		return score;
+	}
+
+	public void setScore(Integer score) {
+		this.score = score;
+	}
+
+	public List<String> getPosWords() {
+		return posWords;
+	}
+
+	public void setPosWords(List<String> posWords) {
+		this.posWords = posWords;
+	}
+
+	public List<String> getNegWords() {
+		return negWords;
+	}
+
+	public void setNegWords(List<String> negWords) {
+		this.negWords = negWords;
 	}
 }

@@ -11,8 +11,9 @@ import com.models.Article;
 import com.models.Extractor;
 
 @Service
-public class ExtractorServiceImpl implements ExtractorService {
-	private Extractor extractor = new Extractor();
+public class ExtractorServiceImpl implements ExtractorService 
+{
+	private Extractor extractor;
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public void setExtractor(Extractor extractor) {
@@ -20,11 +21,14 @@ public class ExtractorServiceImpl implements ExtractorService {
 	}
 
 	@Override
-	public ArrayList<Article> extract(String entrepriseName) {
-		System.out.println(" nom entreprise :"+entrepriseName);
+	public ArrayList<Article> extract(String entrepriseName)
+	{
+		System.out.println(" nom entreprise : "+entrepriseName);
 		return this. extractor.extract(entrepriseName);
 	}
-
+	
+	// Pour le débuggage
+	/*
 	@Override
 	public String extractJsonArticles(String entrepriseName) {		
 		ArrayList<Article> articles = this.extract(entrepriseName);
@@ -36,6 +40,7 @@ public class ExtractorServiceImpl implements ExtractorService {
 		ArrayList<Article> articles = this.extract(entrepriseName);
 		return this.gson.toJson(articles.get(id)); 
 	}
+	*/
 	
 	@Override
 	public byte[] extractJsonArticlesUTF8(String entrepriseName) {		
@@ -43,12 +48,15 @@ public class ExtractorServiceImpl implements ExtractorService {
 		String notUTF8String;
 		byte[] UTF8String;
 		
-		try {
+		try 
+		{
 			notUTF8String = this.gson.toJson(articles);
 			UTF8String = notUTF8String.getBytes("UTF8");
-			System.out.println(UTF8String[0]);
+			//System.out.println(UTF8String[0]);
 			return UTF8String;
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) 
+		{
 			System.out.println("--Enconding in UTF8 failed");
 		}
 		System.out.println("--Enconding in UTF8 failed");
