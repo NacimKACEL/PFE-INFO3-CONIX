@@ -23,3 +23,25 @@
 	background: #5cb85c; 
 	color: #fff; 
 }
+fieldset 
+{
+	border: 2px solid #428bca !important;
+	margin: 0;
+	padding: 10px;       
+	position: relative;
+	border-radius:4px;
+	background-color:#f5f5f5;
+	padding-left:10px!important;
+	margin-bottom:20px;
+}	
+	
+legend
+{
+	font-size:14px;
+	font-weight:bold;
+	width: 22%; 
+	border: 2px solid #428bca;
+	border-radius: 4px; 
+	padding: 5px 5px 5px 10px; 
+	background-color: #ffffff;
+}
