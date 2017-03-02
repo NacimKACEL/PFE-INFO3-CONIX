@@ -225,7 +225,14 @@ public class Extractor
 				        	logger.info("ajout de l'article " + article);
 				        	articles.add(article);
 				        	// Enregistrement de l'article dans la BDD
-				        	this.articleService.persistArticle(article);
+				        	try
+				        	{
+				        		this.articleService.persistArticle(article);
+				        	}
+				        	catch(Exception e){
+				        		logger.error("Problème enregistrement dans la BDD, mauvais caractères...");
+				        	}
+				        	
 				        	// On incrémente le nombre d'articles trouvés
 							this.nbReached++;
 						}
